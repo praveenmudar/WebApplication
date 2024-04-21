@@ -1,0 +1,53 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif; /* Default font */
+}
+
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('background-image.jpg'); /* Replace with your background image */
+  background-size: cover;
+  filter: blur(5px); /* Apply blur effect */
+  z-index: -1; /* Background behind other elements */
+}
+
+.tab-container {
+  max-width: 600px; /* Limit the container width */
+  margin: 100px auto; /* Center the container */
+  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.tabs {
+  display: flex; /* Layout for tab links */
+  justify-content: space-around; /* Even spacing */
+}
+
+.tablink {
+  background-color: #007bff; /* Default tab color */
+  color: white; /* White text */
+  padding: 10px 20px; /* Padding for tab links */
+  border: none; /* No border */
+  border-radius: 5px 5px 0 0; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor */
+}
+
+.tabcontent {
+  display: none; /* Initially hidden */
+  padding: 20px; /* Padding for tab content */
+}
+
+.tabcontent h2 {
+  color: #333; /* Dark text color */
+}
+
+#listeningIndicator {
+  display: none; /* Default is hidden */
+  color: red; /* Red text to indicate listening */
+}

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat with Sidebar Navigation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to bottom right, #f5f1f1, #efd7d7);
+    }
+
+    .layout {
+      display: flex;
+      height: 100vh; 
+    }
+
+    .sidebar {
+      width: 200px;
+      background-color: rgba(0, 0, 0, 0.7);
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      position: absolute;
+      left: -200px; 
+      top: 0;
+      bottom: 0;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar h2 {
+      color: #ffffff; 
+    }
+
+    .sidebar a {
+      color: #ffffff; 
+      text-decoration: none;
+      display: block;
+      padding: 10px;
+      border-radius: 5px; 
+      transition: all 0.3s ease;
+    }
+
+    .sidebar a:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .sidebar-toggle {
+      position: absolute;
+      top: 20px;
+      left: 10px;
+      background-color: #333; 
+      color: #fff;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer; 
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-toggle:hover {
+      background-color: #444;
+    }
+
+    .chat-container {
+      flex-grow: 1; 
+      padding: 20px;
+      margin-left: 200px;
+    }
+
+    .chat-messages {
+      overflow-y: auto; 
+      height: calc(100vh - 60px); 
+    }
+
+    .input-container {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: calc(96.5% - 200px); 
+      padding: 10px;
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0); 
+    }
+
+    #inputText {
+      width: 60%; 
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    #sendButton {
+      background-color: #ff7e5f; 
+      color: #f2efef;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer; 
+      transition: all 0.3s ease;
+    }
+
+    #sendButton:hover {
+      background-color: #e86c52;
+    }
+
+    #micButton {
+      background-color: transparent;
+      color: #333;
+      border: 1px solid #333;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: all 0.3s ease; 
+    }
+
+    #micButton:hover {
+      background-color: #ff7e5f; 
+      color: #ffffff; 
+    }
+
+    #listeningIndicator {
+      color: red; 
+      display: none; 
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar" id="sidebar">
+      <h2>Options</h2>
+      <a href="#home">Home</a>
+      <a href="#stock-details">Stock Details</a>
+      <a href="#about">About</a>
+    </div>
+
+    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages">
+        <!-- Messages will be added here -->
+      </div>
+
+      <div class="input-container">
+        <input type="text" id="inputText" placeholder="Type here..." />
+        <button id="sendButton" onclick="sendMessage()">Send</button>
+        <button id="micButton" onclick="startListening()">🎙️</button>
+        <div id="listeningIndicator">Listening...</div> 
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      var sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("active"); 
+    }
+
+    function sendMessage() {
+      var inputText = document.getElementById("inputText").value;
+
+      var userMessage = document.createElement("div");
+      userMessage.innerText = "You: " + inputText;
+      document.getElementById("chatMessages").appendChild(userMessage);
+
+      document.getElementById("inputText").value = "";
+
+      response = axios.get('http://127.0.0.1:5000/data', { params: { data: inputText } })
+     
+        .then(function(response) {
+          var serverMessage = document.createElement("div");
+          serverMessage.innerText = "Server: " + response.data;
+          document.getElementById("chatMessages").appendChild(serverMessage);
+        })
+        .catch(function(error) {
+          console.error('Error:', error.message);
+          var errorMessage = document.createElement("div");
+          errorMessage.innerText = "Error: " + error.message; 
+          document.getElementById("chatMessages").appendChild(errorMessage); 
+        });
+
+    }
+
+    function startListening() {
+      if ('webkitSpeechRecognition' in window) {
+        var recognition = new webkitSpeechRecognition();
+        recognition.lang = 'en-US';
+
+        recognition.onstart = function() {
+          document.getElementById("micButton").style.backgroundColor = 'red';
+          document.getElementById("listeningIndicator").style.display = 'inline'; 
+        };
+
+        recognition.onresult = function(event) {
+          var transcript = event.results[0][0].transcript; 
+          document.getElementById("inputText").value = transcript;
+        };
+
+        recognition.onend = function() {
+          document.getElementById("micButton").style.backgroundColor = ''; 
+          document.getElementById("listeningIndicator").style.display = 'none'; 
+        };
+
+        recognition.start(); 
+      } else {
+        alert("Your browser does not support speech recognition."); 
+      }
+    }
+  </script>
+</body>
+</html>
